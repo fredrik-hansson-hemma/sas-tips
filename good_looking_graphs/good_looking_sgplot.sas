@@ -1,5 +1,5 @@
 
-
+title; footnote;
 ods path work.template(update) sashelp.tmplmst(read);
 
 /* Create a global template that all tables will inherit from */
@@ -59,8 +59,7 @@ run;
 
 
 ods html file="/tmp/good_looking_sgplots.html" gpath="/tmp/" style=mystyle;
-
-ods graphics on / reset=all imagefmt=png reset=index height=300px width=400px;
+ods graphics on / reset=all reset=index imagename="good_looking_sgplot" imagefmt=png height=300px width=200px ;
 
 ods layout gridded columns=2;
 
@@ -153,19 +152,67 @@ run;
 ods html style=mystyle2;
 ods region;
 proc odstext;
-	p "Anpassa skalan så att den blir lätt att relatera till.";
+	p "Vad är egentligen poängen med konturen runt staplarna? Det naturliga när man ritar grafer för hand, är att man först ritar staplarnas konturer med linjal, och sedan fyller i dem. När man använder en dator för att rita grafen, har vi inget behov av att arbeta på det sättet.";
+	p "Vi skippar konturen runt staplarna. För att inte staplarna ska smälta ihop med bakgrunden, byter vi också färg till en som tydligare avtecknar sig mot bakgrunden";
+run;
+ods region;
+ods graphics / border=off;
+proc sgplot data=work.class;
+	XAXIS DISPLAY=(NOTICKS NOLABEL);
+  vbar sex / response=age stat=mean FILL fillattrs=(color=cx7F7F7F);
+run;
+
+
+
+
+
+ods html style=mystyle2;
+ods region;
+proc odstext;
+	p "En beskrivande rubrik blir pricken över i.";
+run;
+ods region;
+ods graphics / border=off;
+proc sgplot data=work.class;
+	title "Medelålder i klassen, fördelat på kön";
+	XAXIS DISPLAY=(NOTICKS NOLABEL);
+  vbar sex / response=age stat=mean FILL fillattrs=(color=cx7F7F7F);
+run;
+
+
+
+
+
+
+ods html style=mystyle2;
+ods region;
+proc odstext;
+	p "I just den här grafen är skalan på Y-axeln lite svår att relatera till. 2,5 år mellan skalstrecken känns lite onaturligt.";
+	p "Vi anpassar skalan så att den blir lätt att relatera till.";
 run;
 ods region;
 ods graphics / border=off;
 proc sgplot data=work.class;
 	XAXIS DISPLAY=(NOTICKS NOLABEL);
 	YAXIS INTEGER VALUES=(0 to 14 by 1);
-  vbar sex / response=age stat=mean;
+  vbar sex / response=age stat=mean FILL fillattrs=(color=cx7F7F7F);
+run;
+
+ods layout end;
+
+title;
+
+data _null_;
+	declare odsout obj(); 
+	obj.layout_gridded(columns: 2);
+	obj.region(width: "3.25in"); 
+	obj.image(file: "C:\tmp\good_looking_sgplot.png"); 
+	obj.region();
+	obj.image(file: "C:\tmp\good_looking_sgplot7.png"); 
+	obj.layout_end(); 
+	obj.delete(); 
 run;
 
 
 
-
-
-ods layout end;
 ods _all_ close;
