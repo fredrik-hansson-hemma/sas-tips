@@ -2,27 +2,38 @@
 title; footnote;
 ods path work.template(update) sashelp.tmplmst(read);
 
-/* Create a global template that all tables will inherit from */
-  proc template ;
-  	define style mystyle;
-     parent=styles.htmlblue;
+
+* Skapar en template mest för att slippa den blå bakgrunden i styles.htmlblue	;
+proc template;
+	define style mystyle;
+
+		parent=styles.htmlblue;
+
+		style Body from Body/
+			pagebreakhtml = _undef_
+			backgroundcolor = #cxFFFFFF;
+		style paragraph from paragraph /
+			backgroundcolor=cxFFFFFF;
+		style TitlesAndFooters from TitlesAndFooters/
+			foreground=CX000000
+			background=CXFFFFFF;
 	end;
 
-     define table base.template.table;
-        cellstyle mod(_row_, 2) and
-                  ^(_style_ like '%Header') as {backgroundcolor=lightgray},
-                  ^(mod(_row_, 2)) and
-                  ^(_style_ like '%Header') as {backgroundcolor=white};
-     end;
+	define table base.template.table;
+		cellstyle mod(_row_, 2) and
+			^(_style_ like '%Header') as {backgroundcolor=lightgray},
+			^(mod(_row_, 2)) and
+			^(_style_ like '%Header') as {backgroundcolor=white};
+	end;
 
 	* delete base.template.table;
 	* delete base.template.column;
-     /* Just some extra eye candy *
-     define column base.template.column;
-        cellstyle _val_ > 70 as {color=red};
-     end; ******/
-  run;
 
+	/* Just some extra eye candy *
+	define column base.template.column;
+	   cellstyle _val_ > 70 as {color=red};
+	end; ******/
+run;
 
 
   /* Run some procs *
@@ -39,10 +50,10 @@ ods path work.template(update) sashelp.tmplmst(read);
   ods pdf close;
 */
 
-* Introduktion ;
 
 
-* Ny sida ;
+
+
 
 * Försvenskar datasetet	;
 proc format;
@@ -61,7 +72,29 @@ run;
 ods html file="/tmp/good_looking_sgplots.html" gpath="/tmp/" style=mystyle;
 ods graphics on / reset=all reset=index imagename="good_looking_sgplot" imagefmt=png height=300px width=200px ;
 
-ods layout gridded columns=2;
+
+
+
+
+
+* Introduktion ;
+ods layout gridded columns=1 width=600px;
+
+ods region;
+title "The data, the whole data and nothing but the data";
+proc odstext;
+	p "Har Du också hört ""sgplot:ar ser ut som gchart borde ha gjort ""?.";
+	p "Det kanske är sant, men hur borde egentligen sgplot:ar se ut?";
+	p "Här fokuserar jag på att plocka bort onödiga detaljer från ett stapeldiagram, för att göra det lättare för den som ska se diagrammet att fokusera på datat.";
+run;
+title;
+ods layout end;
+
+
+
+
+* sgplot utan modifieringar	;
+ods layout gridded columns=2 width=600px;
 
 ods region;
 proc odstext;
@@ -74,6 +107,13 @@ proc sgplot data=work.class;
   vbar sex / response=age stat=mean;
 run;
 
+
+
+
+
+
+
+* sgplot utan yttre ram ;
 ods region;
 
 proc odstext;
@@ -90,6 +130,12 @@ run;
 
 
 
+
+
+
+
+* sgplot utan inre ram	;
+
 * Skapar ny style utan ram runt grafen	;
 proc template;
    define style mystyle2;
@@ -105,7 +151,7 @@ run;
 ods html style=mystyle2;
 ods region;
 proc odstext;
-	p "Den inre rutan tillför inte heller något. Och om den inte har någon funktion, så är det bättre att vara utan den.";
+	p "Den inre ramen tillför inte heller något. Och om den inte har någon funktion, så är det bättre att vara utan den.";
 run;
 ods region;
 ods graphics / border=off;
@@ -116,7 +162,14 @@ run;
 
 
 
-ods html style=mystyle2;
+
+
+
+
+
+
+
+* sgplot utan tickmarks på X-axeln	;
 ods region;
 proc odstext;
 	p "Behövs verkligen tick-marks på X-axeln? Inte i den här grafen i alla fall, och väldigt sällan för kategoriska variabler över huvud taget.";
@@ -133,7 +186,11 @@ run;
 
 
 
-ods html style=mystyle2;
+
+
+
+
+* sgplot utan label till X-axeln	;
 ods region;
 proc odstext;
 	p "För kategoriska variabler(klassvariabler) är det sällan nödvändigt att skriva ut variabelnamnet (i det här fallet 'kön'). Det är ju ganska uppenbart. Och om det inte hjälper oss så...";
@@ -149,7 +206,14 @@ run;
 
 
 
-ods html style=mystyle2;
+
+
+
+
+
+
+
+* sgplot utan kontur runt staplarna	;
 ods region;
 proc odstext;
 	p "Vad är egentligen poängen med konturen runt staplarna? Det naturliga när man ritar grafer för hand, är att man först ritar staplarnas konturer med linjal, och sedan fyller i dem. När man använder en dator för att rita grafen, har vi inget behov av att arbeta på det sättet.";
@@ -166,7 +230,7 @@ run;
 
 
 
-ods html style=mystyle2;
+* sgplot med titel	;
 ods region;
 proc odstext;
 	p "En beskrivande rubrik blir pricken över i.";
@@ -184,7 +248,11 @@ run;
 
 
 
-ods html style=mystyle2;
+
+
+
+
+* Snyggar till Y-axeln	;
 ods region;
 proc odstext;
 	p "I just den här grafen är skalan på Y-axeln lite svår att relatera till. 2,5 år mellan skalstrecken känns lite onaturligt.";
@@ -199,13 +267,20 @@ proc sgplot data=work.class;
 run;
 
 ods layout end;
-
 title;
 
+
+
+
+
+
+* Jämförelse mellan första och sista bilden	;
+title justify=center "Före- och efterbilder";
 data _null_;
 	declare odsout obj(); 
 	obj.layout_gridded(columns: 2);
-	obj.region(width: "3.25in"); 
+	obj.region(width: "3.25in");
+	obj.title(text: "Före");
 	obj.image(file: "C:\tmp\good_looking_sgplot.png"); 
 	obj.region();
 	obj.image(file: "C:\tmp\good_looking_sgplot7.png"); 
