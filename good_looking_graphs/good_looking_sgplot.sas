@@ -1,6 +1,7 @@
 
 title; footnote;
 ods path work.template(update) sashelp.tmplmst(read);
+ods escapechar="^";
 
 
 * Skapar en template mest för att slippa den blå bakgrunden i styles.htmlblue	;
@@ -13,8 +14,12 @@ proc template;
 			pagebreakhtml = _undef_
 			backgroundcolor = #cxFFFFFF;
 		style paragraph from paragraph /
-			backgroundcolor=cxFFFFFF;
+			backgroundcolor=cxFFFFFF
+			fontsize=12px;
 		style TitlesAndFooters from TitlesAndFooters/
+			foreground=CX000000
+			background=CXFFFFFF;
+		style UserText from UserText /
 			foreground=CX000000
 			background=CXFFFFFF;
 	end;
@@ -69,7 +74,10 @@ run;
 
 
 
-ods html file="/tmp/good_looking_sgplots.html" gpath="/tmp/" style=mystyle;
+ods html	file="D:\Dropbox\Public\Jobbrelaterat\sas-tips\good_looking_sgplots.html"
+			gpath="D:\Dropbox\Public\Jobbrelaterat\sas-tips\good_looking_sgplots\"(URL=".\good_looking_sgplots\")
+			style=mystyle
+			encoding='utf-8';
 ods graphics on / reset=all reset=index imagename="good_looking_sgplot" imagefmt=png height=300px width=200px ;
 
 
@@ -77,25 +85,30 @@ ods graphics on / reset=all reset=index imagename="good_looking_sgplot" imagefmt
 
 
 
-* Introduktion ;
-ods layout gridded columns=1 width=600px;
 
-ods region;
-title "The data, the whole data and nothing but the data";
+
+ods layout gridded columns=2 width=600px;
+
+
+* Introduktion ;
+ods region column_span=2;
+
+ods text="^n^n";
+ods text="^{style [just=center font_size=24pt] Framhäva grafen eller framhäva data i grafen? - sgplot}"; 
+ods text="^n^n";
+
 proc odstext;
 	p "Har Du också hört ""sgplot:ar ser ut som gchart borde ha gjort ""?.";
 	p "Det kanske är sant, men hur borde egentligen sgplot:ar se ut?";
 	p "Här fokuserar jag på att plocka bort onödiga detaljer från ett stapeldiagram, för att göra det lättare för den som ska se diagrammet att fokusera på datat.";
 run;
 title;
-ods layout end;
 
+ods text="^n^n";
 
 
 
 * sgplot utan modifieringar	;
-ods layout gridded columns=2 width=600px;
-
 ods region;
 proc odstext;
 	p "Såhär ser en sgplot ut med default-uteseende.";
@@ -266,14 +279,35 @@ proc sgplot data=work.class;
   vbar sex / response=age stat=mean FILL fillattrs=(color=cx7F7F7F);
 run;
 
+ods region column_span=2;
+
+ods text="^n^n^n^n^n^n";
+
+ods region;
+ods text="^{style [just=center font_size=18pt] Före}^n^n"; 
+ods text="^{style [preimage='.\good_looking_sgplots\good_looking_sgplot.png'] }"; 
+
+ods region;
+ods text="^{style [just=center font_size=18pt] Efter}^n^n"; 
+ods text="^{style [preimage='.\good_looking_sgplots\good_looking_sgplot7.png'] }"; 
+
 ods layout end;
 title;
 
+/***********
+
+ods layout gridded columns=2 width=600px;
+ods region;
+ods text="^{style [preimage='D:\Dropbox\Public\Jobbrelaterat\sas-tips\good_looking_sgplots\good_looking_sgplot.png'] }"; 
+ods region;
+ods text="^{style [preimage='D:\Dropbox\Public\Jobbrelaterat\sas-tips\good_looking_sgplots\good_looking_sgplot7.png'] }"; 
+ods layout end;
 
 
 
 
-
+/******************	Fick inte det här att fungera med relativa sökvägar till bilderna
+					(vilket jag vill ha i html-filen)
 * Jämförelse mellan första och sista bilden	;
 title justify=center "Före- och efterbilder";
 data _null_;
@@ -281,13 +315,13 @@ data _null_;
 	obj.layout_gridded(columns: 2);
 	obj.region(width: "3.25in");
 	obj.title(text: "Före");
-	obj.image(file: "C:\tmp\good_looking_sgplot.png"); 
+	obj.image(file: "D:\Dropbox\Public\Jobbrelaterat\sas-tips\good_looking_sgplots\good_looking_sgplot.png"); 
 	obj.region();
-	obj.image(file: "C:\tmp\good_looking_sgplot7.png"); 
+	obj.image(file: "D:\Dropbox\Public\Jobbrelaterat\sas-tips\good_looking_sgplots\good_looking_sgplot7.png"); 
 	obj.layout_end(); 
 	obj.delete(); 
 run;
-
+******************/
 
 
 ods _all_ close;
