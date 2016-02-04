@@ -100,7 +100,7 @@ ods text="^n^n";
 proc odstext;
 	p "Har Du också hört ""sgplot:ar ser ut som gchart borde ha gjort ""?.";
 	p "Det kanske är sant, men hur borde egentligen sgplot:ar se ut?";
-	p "Här fokuserar jag på att plocka bort onödiga detaljer från ett stapeldiagram, för att göra det lättare för den som ska se diagrammet att fokusera på datat.";
+	p "Här fokuserar jag på att plocka bort onödiga detaljer från ett stapeldiagram, för att göra det lättare för den som ska konsumera diagrammet att fokusera på datat.";
 run;
 title;
 
