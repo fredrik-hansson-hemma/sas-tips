@@ -31,29 +31,7 @@ proc template;
 			^(_style_ like '%Header') as {backgroundcolor=white};
 	end;
 
-	* delete base.template.table;
-	* delete base.template.column;
-
-	/* Just some extra eye candy *
-	define column base.template.column;
-	   cellstyle _val_ > 70 as {color=red};
-	end; ******/
 run;
-
-
-  /* Run some procs *
-  ods pdf file="c:\tmp\striped.pdf" startpage=no;
-
-  proc means data=sashelp.class;
-     class age;
-     var height weight;
-  run;
-
-  proc contents data=sashelp.class;
-  run;
-
-  ods pdf close;
-*/
 
 
 
